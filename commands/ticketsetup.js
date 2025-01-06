@@ -12,7 +12,7 @@ module.exports = {
             .setTitle('🎫 Erstelle ein Ticket')
             .setDescription('Wähle eine Option, um ein Ticket zu erstellen:')
             //.setThumbnail('https://media.tenor.com/Z3UnzqoaujMAAAAe/lspd.png')
-            .setImage(process.env.LSPD_BANNER || 'https://example.com/default-banner.png')
+            .setImage(process.env.LSPD_BANNER || 'https://static.wikia.nocookie.net/ultimate-roleplay/images/2/20/New_LSPD_Banner.jpg/revision/latest?cb=20170407023834')
             .setColor('#333333')
 
         const row = new ActionRowBuilder()

@@ -3,6 +3,8 @@ const path = require('path');
 const { Client, Collection, GatewayIntentBits, REST, Routes, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
 require('dotenv').config();
 
+const { clientId, guildId, token } = require('./config.json');
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
 
@@ -41,7 +43,7 @@ for (const file of commandFiles) {
 
 // Commands bei Discord registrieren
 client.once('ready', async () => {
-    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+    const rest = new REST({ version: '10' }).setToken(token);
 
     try {
         console.log('Registriere Slash-Commands...');
@@ -147,4 +149,4 @@ client.on('interactionCreate', async interaction => {
 });
 
 // Bot anmelden
-client.login(process.env.DISCORD_TOKEN);
+client.login(token);
