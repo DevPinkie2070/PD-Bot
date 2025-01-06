@@ -13,7 +13,7 @@ module.exports = {
     ),
   async execute(interaction) {
     // ID der Rolle, die Zugriff auf diesen Command hat
-    const allowedRoleId = '1177621504322707527';
+    const allowedRoleId = '1324874068813545507';
 
     // Überprüfe, ob der Benutzer die erforderliche Rolle hat
     if (!interaction.member.roles.cache.has(allowedRoleId)) {
@@ -29,7 +29,7 @@ module.exports = {
 
     // Erstelle das Embed
     const userEmbed = new EmbedBuilder()
-      .setColor('#480a69') // Setzt die Farbe des Embeds
+      .setColor('#333') // Setzt die Farbe des Embeds
       .setTitle('Benutzerinformationen') // Titel des Embeds
       .setDescription(`Informationen über ${user.username}`) // Beschreibung des Embeds
       .setThumbnail(user.displayAvatarURL()) // Setzt das Thumbnail als Benutzer-Avatar

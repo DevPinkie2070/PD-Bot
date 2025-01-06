@@ -12,7 +12,7 @@ module.exports = {
 
 		// Erstelle das Embed
 		const serverembed = new EmbedBuilder()
-			.setColor('#480a69')
+			.setColor('#333')
 			.setTitle(`Server: ${interaction.guild.name}`)
 			.setDescription(`Der Server hat ${interaction.guild.memberCount} Mitglieder.`)
 			.setFooter({ text: 'Bot by Pinkie2070' });

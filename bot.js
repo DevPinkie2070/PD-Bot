@@ -51,8 +51,8 @@ client.once('ready', async () => {
         );
 
         client.user.setPresence({
-            activities: [{ name: 'Verfügbar', type: 3 }],
-            status: 'dnd'
+            activities: [{ name: 'Im Dienst', type: 4 }],
+            status: 'online'
         });
 
         console.log(`Bot ist bereit! Eingeloggt als ${client.user.tag}`);
