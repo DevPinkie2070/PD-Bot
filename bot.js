@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { Client, Collection, GatewayIntentBits, REST, Routes, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionsBitField } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, REST, Routes, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, PermissionsBitField } = require('discord.js');
 require('dotenv').config();
 
 const { clientId, guildId, token } = require('./config.json');
@@ -8,19 +8,19 @@ const { clientId, guildId, token } = require('./config.json');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
 
-// Rollen-IDs festlegen (ersetze diese mit den tatsächlichen IDs auf deinem Server)
-const ROLE_ADMIN = '1324874068813545507'; // Admin-Rolle für vollen Zugriff
-const ROLE_TEAMLEAD = '1324874068700299317'; // Detektive für Detektiv-Tickets
-const ROLE_SUPPORT = '1324874068658491508'; // SWAT für SWAT-Tickets
-const ROLE_MOD = '1324874068658491506'; // Personalabteilung für Bewerbung
-const ROLE_FACTION = '1324874068658491506'; // Personalabteilung für Beschwerden
+// Rollen-IDs festlegen
+const ROLE_ADMIN = '1324874068813545507';
+const ROLE_TEAMLEAD = '1324874068700299317';
+const ROLE_SUPPORT = '1324874068658491508';
+const ROLE_MOD = '1324874068658491506';
+const ROLE_FACTION = '1324874068658491506';
 
-// Kategorien-IDs festlegen (ersetze diese mit den tatsächlichen IDs auf deinem Server)
-const CATEGORY_SUPPORT = '1324875772384772228'; // Antrag
-const CATEGORY_FRAGE = '1324875772384772228';   // SWAT Tickets
-const CATEGORY_ENTBANNUNG = '1324875772384772228'; // Detective Tickets
-const CATEGORY_FRAKTIONSVERWALTUNG = '1324875772384772228'; // Für Beschwerden
-const CATEGORY_TEAMBEWERBUNG = '1324875772384772228'; // Für Bewerbungen
+// Kategorien-IDs festlegen
+const CATEGORY_SUPPORT = '1324875772384772228';
+const CATEGORY_FRAGE = '1324875772384772228';
+const CATEGORY_ENTBANNUNG = '1324875772384772228';
+const CATEGORY_FRAKTIONSVERWALTUNG = '1324875772384772228';
+const CATEGORY_TEAMBEWERBUNG = '1324875772384772228';
 
 // Commands dynamisch laden
 const commands = [];
@@ -28,14 +28,7 @@ const commandFiles = fs.readdirSync(path.join(__dirname, 'commands')).filter(fil
 
 for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
-    
-    // Debugging: Zeige die exportierten Daten der Command-Datei an
-    console.log(command);
-
-    // Überprüfen, ob die Command-Datei ein gültiges 'data'-Objekt hat
-    if (!command.data || !command.data.name) {
-        console.error(`Fehler: Die Command-Datei ${file} hat kein gültiges 'data'-Objekt.`);
-    } else {
+    if (command.data && command.data.name) {
         client.commands.set(command.data.name, command);
         commands.push(command.data);
     }
@@ -74,8 +67,9 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply({ content: 'Es gab einen Fehler beim Ausführen des Commands!', ephemeral: true });
         }
     } 
-    // Ticket-Erstellungsbutton 
-    else if (interaction.isButton() && ['support', 'frage', 'entbannung', 'fraktionsverwaltung', 'teambewerbung'].includes(interaction.customId)) {
+    
+    // Ticket-Erstellungsmenü
+    else if (interaction.isStringSelectMenu() && interaction.customId === 'ticket_select') {
         const { user, guild } = interaction;
 
         let categoryID;
@@ -94,20 +88,30 @@ client.on('interactionCreate', async interaction => {
             }
         ];
 
-        if (interaction.customId === 'support') {
-            categoryID = CATEGORY_SUPPORT;
-            permissions.push({ id: ROLE_SUPPORT, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] });
-        } else if (interaction.customId === 'frage') {
-            categoryID = CATEGORY_FRAGE;
-        } else if (interaction.customId === 'entbannung') {
-            categoryID = CATEGORY_ENTBANNUNG;
-            permissions.push({ id: ROLE_MOD, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] });
-        } else if (interaction.customId === 'fraktionsverwaltung') {
-            categoryID = CATEGORY_FRAKTIONSVERWALTUNG;
-            permissions.push({ id: ROLE_FACTION, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] });
-        } else if (interaction.customId === 'teambewerbung') {
-            categoryID = CATEGORY_TEAMBEWERBUNG;
-            permissions.push({ id: ROLE_TEAMLEAD, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] });
+        const selectedOption = interaction.values[0];
+
+        switch (selectedOption) {
+            case 'support':
+                categoryID = CATEGORY_SUPPORT;
+                permissions.push({ id: ROLE_SUPPORT, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] });
+                break;
+            case 'frage':
+                categoryID = CATEGORY_FRAGE;
+                break;
+            case 'entbannung':
+                categoryID = CATEGORY_ENTBANNUNG;
+                permissions.push({ id: ROLE_MOD, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] });
+                break;
+            case 'fraktionsverwaltung':
+                categoryID = CATEGORY_FRAKTIONSVERWALTUNG;
+                permissions.push({ id: ROLE_FACTION, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] });
+                break;
+            case 'teambewerbung':
+                categoryID = CATEGORY_TEAMBEWERBUNG;
+                permissions.push({ id: ROLE_TEAMLEAD, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] });
+                break;
+            default:
+                return interaction.reply({ content: 'Ungültige Option.', ephemeral: true });
         }
 
         // Erstellen des Ticket-Kanals
@@ -137,11 +141,11 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply({ content: `Ticket erstellt: ${ticketChannel}`, ephemeral: true });
     }
     
-    // Ticket schließen, wenn der close_ticket Button gedrückt wird
+    // Ticket schließen
     if (interaction.isButton() && interaction.customId === 'close_ticket') {
         const ticketChannel = interaction.channel;
 
-        await interaction.deferUpdate(); // Antwort an Discord, um keine Fehler auszulösen
+        await interaction.deferUpdate();
         await interaction.followUp({ content: 'Das Ticket wird in 3 Sekunden geschlossen...', ephemeral: true });
 
         setTimeout(() => ticketChannel.delete().catch(console.error), 3000);

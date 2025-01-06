@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,38 +10,35 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('🎫 Erstelle ein Ticket')
-            .setDescription('Wähle eine Option, um ein Ticket zu erstellen:')
-            //.setThumbnail('https://media.tenor.com/Z3UnzqoaujMAAAAe/lspd.png')
+            .setDescription('Wähle eine Option aus dem Menü unten, um ein Ticket zu erstellen:')
             .setImage(process.env.LSPD_BANNER || 'https://static.wikia.nocookie.net/ultimate-roleplay/images/2/20/New_LSPD_Banner.jpg/revision/latest?cb=20170407023834')
-            .setColor('#333333')
+            .setColor('#333333');
 
         const row = new ActionRowBuilder()
             .addComponents(
-                new ButtonBuilder()
-                    .setCustomId('support')
-                    .setLabel('Antrag')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setEmoji('📝'),
-                new ButtonBuilder()
-                    .setCustomId('frage')
-                    .setLabel('SWAT')
-                    .setStyle(ButtonStyle.Secondary)
-                    .setEmoji('💣'),
-                new ButtonBuilder()
-                    .setCustomId('entbannung')
-                    .setLabel('Detective')
-                    .setEmoji('🕵️‍♂️')
-                    .setStyle(ButtonStyle.Secondary),
-                new ButtonBuilder()
-                    .setCustomId('fraktionsverwaltung')
-                    .setLabel('Beschwerde')
-                    .setEmoji('📪')
-                    .setStyle(ButtonStyle.Secondary),
-                new ButtonBuilder()
-                    .setCustomId('teambewerbung')
-                    .setLabel('Bewerbung')
-                    .setEmoji('✉️')
-                    .setStyle(ButtonStyle.Secondary)
+                new StringSelectMenuBuilder()
+                    .setCustomId('ticket_select')
+                    .setPlaceholder('Wähle eine Ticket-Option aus...')
+                    .addOptions([
+                        {
+                            label: 'Antrag',
+                            description: 'Erstelle ein Ticket für einen Antrag.',
+                            emoji: '📝',
+                            value: 'support',
+                        },
+                        {
+                            label: 'Beschwerde',
+                            description: 'Reiche eine Beschwerde ein.',
+                            emoji: '📪',
+                            value: 'fraktionsverwaltung',
+                        },
+                        {
+                            label: 'Bewerbung',
+                            description: 'Bewirb dich für eine Position.',
+                            emoji: '✉️',
+                            value: 'teambewerbung',
+                        },
+                    ])
             );
 
         try {
