@@ -126,7 +126,7 @@ client.on('interactionCreate', async interaction => {
         // Initiale Nachricht mit Schließen-Button
         const closeEmbed = new EmbedBuilder()
             .setTitle('Ticket Unterstützung')
-            .setDescription('Ein Teammitglied wird bald hier sein, um dir zu helfen. Drücke den Button unten, um das Ticket zu schließen, wenn du fertig bist.')
+            .setDescription('Die <@&1324874068658491506> ist gleich für sie da, wir bitten darum Ping und das nachfragen des Standes zu unterlassen.')
             .setColor('#ff0000');
 
         const closeButtonRow = new ActionRowBuilder()
